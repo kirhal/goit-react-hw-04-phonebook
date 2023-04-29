@@ -1,0 +1,32 @@
+.contacts-list {
+  margin: 30px 0 0;
+  padding: 0 30px;
+}
+.contacts-list__item:not(:last-child) {
+  margin-bottom: 8px;
+}
+.contacts-list__item {
+  font-size: 20px;
+}
+.contacts-list__data {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  font-size: 20px;
+}
+.contacts-list__button {
+  padding: 1px 4px;
+  margin-left: 15px;
+  cursor: pointer;
+
+  color: rgb(11, 51, 78);
+  font-size: 14px;
+
+  border: 1px solid rgb(11, 51, 78);
+  border-radius: 5px;
+  background-color: transparent;
+}
+.contacts-list__button:hover {
+  background-color: rgb(11, 51, 78);
+  color: white;
+}

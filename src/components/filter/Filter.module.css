@@ -1,0 +1,28 @@
+.filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-input {
+  margin-top: 15px;
+  padding-left: 20px;
+
+  background-color: transparent;
+  outline: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(3, 25, 39);
+
+  width: 60%;
+  height: 25px;
+
+  font-weight: 400;
+  font-size: 18px;
+  color: rgb(6, 41, 65);
+}
+.filter-input:focus {
+  border-bottom-style: solid;
+  border-bottom-color: rgb(160, 14, 14);
+}
