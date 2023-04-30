@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import css from './App.module.css';
@@ -16,15 +16,21 @@ Notify.init({
   cssAnimationStyle: 'zoom',
 });
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export default function App() {
+  const localContacts = localStorage.getItem('contacts');
+  const parsedContacts = JSON.parse(localContacts);
 
-  addContact = evt => {
+  const [contacts, setContacts] = useState(
+    parsedContacts ? parsedContacts : []
+  );
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = evt => {
     evt.preventDefault();
-    const contacts = this.state.contacts;
     const form = evt.currentTarget;
     const nameValue = form.elements.name.value;
     const numberValue = form.elements.number.value;
@@ -33,72 +39,51 @@ export class App extends Component {
       number: numberValue,
       id: nanoid(),
     };
-    if (this.checkOriginalNames(contacts, nameValue)) {
+    if (checkOriginalNames(contacts, nameValue)) {
       Notify.failure(`❌ ${nameValue} is already in contacts list`);
     } else {
-      this.setState(prevState => ({
-        contacts: [...prevState.contacts, currentSubmit],
-      }));
+      setContacts(prevState => [...prevState, currentSubmit]);
     }
     form.reset();
   };
 
-  onFilterChange = evt => {
-    const filterValue = evt.currentTarget.value.toLowerCase();
-    this.setState({ filter: filterValue.trim() });
+  const onFilterChange = evt => {
+    const filterValue = evt.currentTarget.value.toLowerCase().trim();
+    setFilter(filterValue);
   };
 
-  checkOriginalNames = (contacts, contact) => {
+  const checkOriginalNames = (contacts, contact) => {
     return contacts.find(
       ({ name }) => name.toLowerCase() === contact.toLowerCase()
     );
   };
-  deleteContact = evt => {
-    const contacts = this.state.contacts;
+
+  const deleteContact = evt => {
     const contactId = evt.currentTarget.id;
     const newArr = contacts.filter(({ id }) => id !== contactId);
-    this.setState({ contacts: newArr });
+    setContacts(newArr);
   };
-  filterContacts = () => {
-    const { contacts, filter } = this.state;
+
+  const filterContacts = () => {
     return contacts.filter(({ name }) => name.toLowerCase().includes(filter));
   };
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-  componentDidMount() {
-    console.log();
-    const localContacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(localContacts);
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts });
-    }
-  }
 
-  render() {
-    const { contacts, filter } = this.state;
-    return (
-      <div className={css.container}>
-        <Section title="Phonebook">
-          <AddContacts addContact={this.addContact} />
-        </Section>
-        <Section title="Contacts">
-          {contacts.length !== 0 && (
-            <>
-              <FilterContacts
-                changeFilter={this.onFilterChange}
-                value={filter}
-              />
-              <MapContacts
-                filterContacts={this.filterContacts}
-                deleteContact={this.deleteContact}
-              />
-            </>
-          )}
-        </Section>
-      </div>
-    );
-  }
+  return (
+    <div className={css.container}>
+      <Section title="Phonebook">
+        <AddContacts addContact={addContact} />
+      </Section>
+      <Section title="Contacts">
+        {contacts.length !== 0 && (
+          <>
+            <FilterContacts changeFilter={onFilterChange} value={filter} />
+            <MapContacts
+              filterContacts={filterContacts}
+              deleteContact={deleteContact}
+            />
+          </>
+        )}
+      </Section>
+    </div>
+  );
 }
